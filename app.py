@@ -3,6 +3,7 @@ import time
 import cv2
 import torch
 import torchvision
+from PIL import Image
 import torch.nn as nn
 import streamlit as st
 from pathlib import Path
@@ -18,7 +19,7 @@ class ResizePad:
         self.size = size
 
     def __call__(self, img):
-        _, w, h = img.shape
+        w, h = img.size
         scale = self.size / max(w, h)
         new_w, new_h = int(w * scale), int(h * scale)
         img = F.resize(img, (new_h, new_w))
@@ -43,14 +44,15 @@ TRANSFER_MP = BASE_DIR / "DistractModelTransfer2.pth"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 VAL_TF_CUSTOM = transforms.Compose([
-    transforms.ToTensor(),
     ResizePad(256),
+    transforms.ToTensor(),
     transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225]),
 ])
 
+
 VAL_TF_TRANSFER = transforms.Compose([
-    transforms.ToTensor(),
     ResizePad(224),
+    transforms.ToTensor(),
     transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225]),
 ])
 
@@ -125,6 +127,8 @@ def person_present(img_rgb, model, score_thr=0.6):
 
 def classify(img_rgb, model, transforms):
     with torch.no_grad():
+        if not isinstance(img_rgb, Image.Image):
+            img_rgb = Image.fromarray(img_rgb)
         out = model(transforms(img_rgb).unsqueeze(0).to(DEVICE))
         return int(out.argmax(dim=1).item())
 
