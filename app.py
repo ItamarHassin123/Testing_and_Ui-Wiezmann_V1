@@ -249,7 +249,7 @@ def main():
             cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB),
             width='stretch'
         )
-        time.sleep(1)
+        time.sleep(0.03) 
 
 
     capture.release()
