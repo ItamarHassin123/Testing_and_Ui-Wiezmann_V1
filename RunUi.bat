@@ -24,7 +24,5 @@ REM ---- Install deps (quiet). If machine has no internet, this will fail. ----
 REM ---- Open browser ----
 start "" "http://localhost:8501"
 
-REM ---- Run app (keep window open so server stays alive) ----
-"%PYEXE%" -m streamlit run app.py --server.address localhost --server.port 8501
 
 endlocal
